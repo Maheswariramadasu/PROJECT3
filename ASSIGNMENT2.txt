@@ -1,0 +1,162 @@
+1. Write a program to accept a year and display the emps belongs to that year?
+---->
+CREATE PROCEDURE P1(@YEAR DATETIME)
+AS
+BEGIN
+SELECT * FROM EMP WHERE HIREDATE=@YEAR
+
+END
+
+EXEC P1 '12-17-1980'
+
+
+2.Write a program to accept a mgr and display who are working under that mgr?
+CREATE FUNCTION F1(@MGR INT)
+RETURNS TABLE
+AS
+RETURN (SELECT * FROM EMP WHERE MGR=@MGR)
+
+SELECT * FROM DBO.F1(7902)
+
+3. Write a program to accept the grade and display emps belongs to that grade?
+---->
+CREATE PROCEDURE P2(@RN INT)
+AS
+BEGIN
+SELECT * FROM(SELECT EMPNO,ENAME ,SAL,ROW_NUMBER() OVER(ORDER BY SAL) AS RN FROM EMP)E
+WHERE RN=@RN
+END
+
+EXEC P2 2
+
+4. Write a program to accept a deptno and display who are working in that dept?
+---->
+CREATE PROCEDURE P3(@DEPTNO INT)
+AS
+BEGIN
+SELECT * FROM DEPT WHERE DEPTNO=@DEPTNO
+END
+EXEC P3 10
+
+5. Write a program to accept the location and display empno, name, sal , date of join and also display the total salary, avg salary and no of emps?
+---->
+ALTER PROCEDURE P4(@LOC VARCHAR(30))
+AS
+BEGIN
+SELECT EMP.* FROM EMP INNER JOIN DEPT D ON EMP.DEPTNO=D.DEPTNO
+WHERE LOC=@LOC
+END
+
+EXEC P4 'NEW YORK'
+
+6. Write a program to accept a range of salary (that is lower boundary and higher boundary) and print the details of emps along with loc,grade and exp?
+---->
+ALTER PROCEDURE M12(@LOSAL INT,@HISAL INT)
+AS
+BEGIN
+SELECT EMP.*,SALGRADE.GRADE,D.LOC FROM EMP  JOIN  SALGRADE ON SAL BETWEEN SALGRADE.LOSAL AND SALGRADE.HISAL
+JOIN DEPT D ON D.DEPTNO=EMP.DEPTNO
+WHERE SALGRADE.LOSAL=@LOSAL AND  SALGRADE.HISAL=@HISAL
+END
+EXEC M12 700,1200
+
+7. Write a program to print all the details of emps accepting the job?
+ALTER PROCEDURE P4(@LOC VARCHAR(30))
+AS
+BEGIN
+SELECT EMP.* FROM EMP INNER JOIN DEPT D ON EMP.DEPTNO=D.DEPTNO
+WHERE LOC=@LOC
+END
+
+EXEC P4 'NEW YORK'
+
+8. Write a program to display the details of emps year wise?
+---->
+ALTER PROCEDURE P1
+AS
+BEGIN 
+SELECT YEAR(EMP.HIREDATE) FROM EMP 
+GROUP BY YEAR(EMP.HIREDATE)
+END
+
+EXEC P1 
+
+9. Write a program to accept empno and print all the details along with loc and grade?
+---->
+ALTER PROCEDURE M12(@EMPNO INT)
+AS
+BEGIN
+SELECT EMP.*,SALGRADE.GRADE,D.LOC FROM EMP  JOIN  SALGRADE ON SAL BETWEEN SALGRADE.LOSAL AND SALGRADE.HISAL
+JOIN DEPT D ON D.DEPTNO=EMP.DEPTNO
+WHERE EMPNO=@EMPNO
+END
+
+EXEC M12 7369
+10. Write a procedure to accept the deptno as parameter and display the details of that dept also display the total salary, no of employees, max sal and avg sal?
+---->
+CREATE PROCEDURE M3(@DEPTNO INT)  
+AS
+BEGIN
+SELECT SUM(SAL) AS TOTAL_SAL,COUNT(EMPNO) AS NO_OF_EMPLOYEE
+,MAX(SAL) AS MAX_SAL,AVG(SAL) AS AVG_SAL FROM EMP INNER JOIN DEPT ON EMP.DEPTNO=DEPT.DEPTNO
+END
+EXEC M3 10
+11. Write a procedure to accept two different numbers and print even numbers between the two given numbers?
+----->
+ALTER PROCEDURE MW(@START INT,@END INT)
+AS
+ BEGIN
+ 
+ WHILE @START<=@END
+ BEGIN
+ IF @START%2=0
+ BEGIN
+  PRINT @START
+  END
+  SET @START=@START+1
+  END
+ END
+ EXEC MW 1,10
+12. Write a procedure to accept deptno as input and print the details of emps along with grade?
+---->
+ALTER PROCEDURE M12(@DEPTNO INT)
+AS
+BEGIN
+SELECT EMP.*,SALGRADE.GRADE,D.LOC FROM EMP  JOIN  SALGRADE ON SAL BETWEEN SALGRADE.LOSAL AND SALGRADE.HISAL
+JOIN DEPT D ON D.DEPTNO=EMP.DEPTNO
+WHERE D.DEPTNO=@DEPTNO
+END
+
+EXEC M12 10
+
+13. Write a procedure to accept a string and check whether it is palindrome or not?
+CREATE PROCEDURE H1(@PALINDROME VARCHAR(20))
+AS
+BEGIN
+IF @PALINDROME=REVERSE(@PALINDROME)
+PRINT 'PALINDROME'
+ELSE
+PRINT 'NOT PALINDROME'
+ 
+END
+
+EXEC H1 'MADAM'
+
+14. Write a procedure to accept the empno and print all the details of emp along with exp, grade and loc?
+----->
+ALTER PROCEDURE M12(@EMPNO INT)
+AS
+BEGIN
+SELECT EMP.*,SALGRADE.GRADE,D.LOC FROM EMP  JOIN  SALGRADE ON SAL BETWEEN SALGRADE.LOSAL AND SALGRADE.HISAL
+JOIN DEPT D ON D.DEPTNO=EMP.DEPTNO
+WHERE EMPNO=@EMPNO
+END
+
+15. Write a procedure to accept a string and print it in reverse case?
+----->
+CREATE PROCEDURE H2(@NAME VARCHAR(20))
+AS
+ BEGIN
+ PRINT REVERSE(@NAME)
+ END
+ EXEC H2 'MAHESWARI'

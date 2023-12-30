@@ -1,0 +1,104 @@
+1.Display student table records using select statement 
+SELECT * FROM STUDENT
+
+2.Display project table records using select statement 
+SELECT * FROM PROJECT
+
+3.Display studentproject table records using select statement 
+SELECT * FROM STUDENTPROJECT
+
+4.Find number of student who participated in the project 'p01' 
+
+SELECT COUNT(ST_NO) AS COUNTING FROM STUDENTPROJECT WHERE PRJ_NO='P01'
+5.Find number of student who participated in the more than single project. 
+SELECT * FROM  STUDENTPROJECT
+SELECT ST_NO,COUNT(DISTINCT(PRJ_NO)) AS CT FROM STUDENTPROJECT  GROUP BY ST_NO HAVING COUNT(DISTINCT(PRJ_NO))>1
+
+6.Find the no of student who did not participated in any of the project 
+
+SELECT * FROM STUDENT S LEFT OUTER JOIN STUDENTPROJECT SP ON  S.ST_NO=SP.ST_NO WHERE SP.ST_NO IS  NULL
+
+7.Display student_no, prj_name,duration  
+SELECT * FROM STUDENT
+SELECT * FROM PROJECT
+SELECT * FROM STUDENTPROJECT
+SELECT S.ST_NO,P.PRJ_NAME FROM STUDENT S JOIN STUDENTPROJECT SP ON S.ST_NO=SP.ST_NO 
+JOIN PROJECT P ON SP.PRJ_NO=P.PRJ_NO
+8.Display prj_no,total no student of the project 
+SELECT PRJ_NO,COUNT(DISTINCT(ST_NO)) AS studentofthe_project  FROM STUDENTPROJECT GROUP BY PRJ_NO 
+
+9.Display  a student_no,name, total no of projects. 
+SELECT ST_NO,COUNT(PRJ_NO) AS studentofthe_project  FROM STUDENTPROJECT GROUP BY ST_NO
+
+10.Display the information(no,name,age) of student  who made the project in java. 
+SELECT * FROM STUDENT
+SELECT * FROM PROJECT
+SELECT * FROM STUDENTPROJECT
+SELECT S.ST_NO,P.PRJ_NAME,DATEDIFF(YEAR,ST_DOB,GETDATE()) FROM STUDENT S JOIN STUDENTPROJECT SP ON S.ST_NO=SP.ST_NO 
+JOIN PROJECT P ON SP.PRJ_NO=P.PRJ_NO WHERE P.PRJ_PLATFORM='JAVA'
+
+11.Display the detail of student who is a programmer. 
+SELECT S.* FROM STUDENT S JOIN STUDENTPROJECT SP ON S.ST_NO=SP.ST_NO  WHERE DESIGNATION='PROGRAMMER'
+
+
+12.Display the informaton of student who is as programmer and analyst in the same project. (Can use table Alias) 
+SELECT SP.PRJ_NO FROM STUDENT S JOIN STUDENTPROJECT SP ON S.ST_NO=SP.ST_NO
+WHERE DESIGNATION='PROGRAMMER 'AND DESIGNATION='ANALYST' GROUP BY SP.PRJ_NO
+13.Display the student who played the max designation(e.g. manager,programmer) in the same project.
+SELECT * FROM STUDENTPROJECT
+SELECT ST_NO,COUNT(PRJ_NO) FROM STUDENTPROJECT WHERE DESIGNATION='MANAGER' OR  DESIGNATION='PROGRAMMER' 
+GROUP BY ST_NO,PRJ_NO HAVING COUNT(PRJ_NO)>1
+14.Display the info of the project with greater than single no of student involve in it. 
+SELECT PRJ_NO,COUNT(ST_NO) FROM STUDENTPROJECT GROUP BY PRJ_NO HAVING COUNT(ST_NO)>1
+SELECT * FROM STUDENTPROJECT
+
+15.Display detail of the youngest student.
+
+SELECT * FROM STUDENT WHERE DATEDIFF(YEAR,ST_DOB,GETDATE())= (SELECT MIN(DATEDIFF(YEAR,ST_DOB,GETDATE()) )FROM STUDENT )
+16.Display the info of the project which duration is the largest. 
+SELECT * FROM studentproject
+ select * from project where prj_dur=(SELECT MAX(prj_dur)FROM project  )
+
+17.who works as a prog and as a analyst not for the same project.(can Use Table alias) 
+select st_no from studentproject where designation='analyst' and designation='programmer'
+group by st_no,
+
+---->
+WITH  CTE AS
+(
+SELECT ST_NO,PRJ_NO FROM STUDENTPROJECT WHERE DESIGNATION='PROGRAMMER'
+),
+ANALYST_CTE AS
+(
+SELECT ST_NO,PRJ_NO FROM STUDENTPROJECT WHERE DESIGNATION='ANALYST'
+)
+SELECT DISTINCT C.ST_NO,C.PRJ_NO FROM CTE  C JOIN ANALYST_CTE A ON C.ST_NO=A.ST_NO
+AND C.PRJ_NO!=A.PRJ_NO
+JOIN STUDENT S ON A.ST_NO=S.ST_NO
+
+
+18.Display the info of the student who works as a programmer and not as an analyst for the same project.(can Use Table alias) 
+
+----->
+--Display the info of the student who works as a programmer and not as an analyst for the same project
+WITH  CTE AS
+(
+SELECT ST_NO,PRJ_NO FROM STUDENTPROJECT WHERE DESIGNATION='PROGRAMMER'
+),
+ANALYST_CTE AS
+(
+SELECT ST_NO,PRJ_NO FROM STUDENTPROJECT WHERE DESIGNATION!='ANALYST'
+)
+SELECT DISTINCT C.ST_NO,C.PRJ_NO FROM CTE  C JOIN ANALYST_CTE A ON C.ST_NO=A.ST_NO
+AND C.PRJ_NO=A.PRJ_NO
+JOIN STUDENT S ON A.ST_NO=S.ST_NO
+
+19.Display the info of the student who participated in the project where total no of the student should be exact three. 
+------>
+SELECT * FROM STUDENTPROJECT WHERE ST_NO IN(SELECT ST_NO FROM STUDENTPROJECT WHERE
+PRJ_NO IN(SELECT PRJ_NO FROM STUDENTPROJECT GROUP BY PRJ_NO HAVING COUNT(DISTINCT ST_NO)=3))
+
+
+20.Display the info. of oldest Student with its age. 
+---->
+SELECT * FROM STUDENT WHERE DATEDIFF(YEAR,ST_DOB,GETDATE())= (SELECT Max(DATEDIFF(YEAR,ST_DOB,GETDATE()) )FROM STUDENT )
